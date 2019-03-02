@@ -1,7 +1,6 @@
 let allProducts;
 let allFilters;
 let brandFilters, priceFilters, colorFilters;
-let currentFilteredProds;
 
 let selectedColors = new Set();
 let selectedBrand = '';
@@ -31,24 +30,16 @@ async function fetchAllData() {
     .then(res => res.json())
     .then(filts => filts.filters);
 
-  currentFilteredProds = allProducts;
   brandFilters = allFilters[0].values;
   colorFilters = allFilters[1].values;
   priceFilters = allFilters[2].values;
-  console.log(colorFilters);
+
   populateFilters();
   populateProducts(allProducts);
 }
 
 function populateFilters() {
-  let priceHtml = ``;
-  priceFilters.forEach(filt => {
-    priceHtml += `
-      <option value="${filt.key}">${filt.displayValue}</option> 
-    `;
-  });
-  priceMinFilterEl.innerHTML = priceHtml;
-  priceMaxFilterEl.innerHTML = priceHtml;
+  populatePriceFilters(priceFilters.slice(0, priceFilters.length - 1), priceFilters.slice(1));
 
   let colorHtml = ``;
   colorFilters.forEach((filt, idx) => {
@@ -64,6 +55,24 @@ function populateFilters() {
     `;
   });
   colorFilterEl.innerHTML = colorHtml;
+}
+
+function populatePriceFilters(minFilters, maxFilter) {
+  let priceLowHtml = ``;
+  minFilters.forEach(filt => {
+    priceLowHtml += `
+      <option value="${filt.key}">${filt.displayValue}</option> 
+    `;
+  });
+  priceMinFilterEl.innerHTML = priceLowHtml;
+
+  let priceHighHtml = ``;
+  maxFilter.forEach(filt => {
+    priceHighHtml += `
+      <option value="${filt.key}">${filt.displayValue}</option> 
+    `;
+  });
+  priceMaxFilterEl.innerHTML = priceHighHtml;
 }
 
 function handleSort(e) {
@@ -89,18 +98,51 @@ function handleCheckChange(color) {
 }
 
 function handlePriceChange(e) {
-  console.log(e);
+  if (e.target.id === 'price-min-filter') {
+    selectedMinPrice = +e.target.value;
+    // if (!Number.isNaN(selectedMinPrice)) {
+    //   populatePriceFilters(
+    //     priceFilters.slice(0, priceFilters.length - 1),
+    //     priceFilters.filter(filt => +filt.key > selectedMinPrice)
+    //   );
+    // } else {
+    //   populatePriceFilters(priceFilters.slice(0, priceFilters.length - 1), priceFilters.slice(1));
+    // }
+  } else {
+    selectedMaxPrice = +e.target.value;
+    // if (!Number.isNaN(selectedMaxPrice)) {
+    //   populatePriceFilters(
+    //     priceFilters.filter(filt => +filt.key < selectedMinPrice),
+    //     priceFilters.slice(1)
+    //   );
+    // } else {
+    //   populatePriceFilters(priceFilters.slice(0, priceFilters.length - 1), priceFilters.slice(1));
+    // }
+  }
+  populateAfterAllFilters();
 }
 
 function populateAfterAllFilters() {
   let filteredProds = [...allProducts];
 
+  // price filter
+  if (selectedMinPrice && !Number.isNaN(selectedMinPrice)) {
+    filteredProds = filteredProds.filter(prod => prod.price.final_price >= selectedMinPrice);
+  }
+
+  if (selectedMaxPrice && !Number.isNaN(selectedMaxPrice)) {
+    filteredProds = filteredProds.filter(prod => prod.price.final_price <= selectedMaxPrice);
+  }
+
+  // Brand filter
   filteredProds = filteredProds.filter(prod => prod.brand.toLowerCase().includes(selectedBrand));
 
+  // color filter
   if (selectedColors.size) {
     filteredProds = filteredProds.filter(prod => selectedColors.has(prod.colour.color));
   }
 
+  // sort
   switch (selectedSortField) {
     case 'releField':
       break;
@@ -122,7 +164,7 @@ function populateProducts(products) {
   });
 
   productsEl.innerHTML = html;
-  document.getElementById('result-count').innerHTML = `Showing ${products.length} results`;
+  document.getElementById('result-count').innerHTML = `Showing <b>${products.length}</b> results`;
 }
 
 function getProductCard(product) {
