@@ -15,6 +15,7 @@ const colorFilterEl = document.getElementById('color-filter');
 const sorterEl = document.getElementById('sorter');
 
 sorterEl.addEventListener('click', handleSort);
+brandFilterEl.addEventListener('input', handleBrandChange);
 
 async function fetchAllData() {
   allProducts = await fetch('http://demo1853299.mockable.io/products', { method: 'GET' })
@@ -77,6 +78,13 @@ function handleSort(e) {
   populateProducts(sortedProds);
 }
 
+function handleBrandChange(e) {
+  const filterVal = e.target.value.toLowerCase();
+
+  const filteredProds = allProducts.filter(prod => prod.brand.toLowerCase().includes(filterVal));
+  populateProducts(filteredProds);
+}
+
 function handleCheckChange(color) {
   if (this.checked) {
     selectedColors.add(color);
@@ -109,7 +117,7 @@ function getProductCard(product) {
         <h6 class="card-title">${product.title}</h6>
         <p><span class="badge badge-primary">${product.rating}</span></p>
         <div class="price-row">
-          <span>$${product.price.final_price}</span>
+          <span><b>$${product.price.final_price}</b></span>
           <span><small><strike>${
             product.price.mrp ? '$' + product.price.mrp : ''
           }</strike></small></span>
