@@ -4,6 +4,10 @@ let brandFilters, priceFilters, colorFilters;
 let currentFilteredProds;
 
 let selectedColors = new Set();
+let selectedBrand = '';
+let selectedMinPrice;
+let selectedMaxPrice;
+let selectedSortField = 'releField';
 
 const filtersEl = document.getElementById('filters');
 const productsEl = document.getElementById('products');
@@ -62,27 +66,14 @@ function populateFilters() {
 
 function handleSort(e) {
   if (e.target.name !== 'sortFields') return;
-  let sortedProds = [...allProducts];
 
-  switch (e.target.id) {
-    case 'releField':
-      break;
-    case 'priceLow':
-      sortedProds.sort((a, b) => a.price.final_price - b.price.final_price);
-      break;
-    case 'priceHigh':
-      sortedProds.sort((a, b) => b.price.final_price - a.price.final_price);
-      break;
-  }
-
-  populateProducts(sortedProds);
+  selectedSortField = e.target.id;
+  populateAfterAllFilters();
 }
 
 function handleBrandChange(e) {
-  const filterVal = e.target.value.toLowerCase();
-
-  const filteredProds = allProducts.filter(prod => prod.brand.toLowerCase().includes(filterVal));
-  populateProducts(filteredProds);
+  selectedBrand = e.target.value.toLowerCase();
+  populateAfterAllFilters();
 }
 
 function handleCheckChange(color) {
@@ -92,12 +83,30 @@ function handleCheckChange(color) {
     selectedColors.delete(color);
   }
 
+  populateAfterAllFilters();
+}
+
+function populateAfterAllFilters() {
+  let filteredProds = [...allProducts];
+
+  filteredProds = filteredProds.filter(prod => prod.brand.toLowerCase().includes(selectedBrand));
+
   if (selectedColors.size) {
-    currentFilteredProds = allProducts.filter(prod => selectedColors.has(prod.colour.color));
-  } else {
-    currentFilteredProds = allProducts;
+    filteredProds = filteredProds.filter(prod => selectedColors.has(prod.colour.color));
   }
-  populateProducts(currentFilteredProds);
+
+  switch (selectedSortField) {
+    case 'releField':
+      break;
+    case 'priceLow':
+      filteredProds.sort((a, b) => a.price.final_price - b.price.final_price);
+      break;
+    case 'priceHigh':
+      filteredProds.sort((a, b) => b.price.final_price - a.price.final_price);
+      break;
+  }
+
+  populateProducts(filteredProds);
 }
 
 function populateProducts(products) {
