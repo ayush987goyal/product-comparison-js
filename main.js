@@ -20,6 +20,8 @@ const sorterEl = document.getElementById('sorter');
 
 sorterEl.addEventListener('click', handleSort);
 brandFilterEl.addEventListener('input', handleBrandChange);
+priceMinFilterEl.addEventListener('change', handlePriceChange);
+priceMaxFilterEl.addEventListener('change', handlePriceChange);
 
 async function fetchAllData() {
   allProducts = await fetch('http://demo1853299.mockable.io/products', { method: 'GET' })
@@ -86,6 +88,10 @@ function handleCheckChange(color) {
   populateAfterAllFilters();
 }
 
+function handlePriceChange(e) {
+  console.log(e);
+}
+
 function populateAfterAllFilters() {
   let filteredProds = [...allProducts];
 
@@ -116,6 +122,7 @@ function populateProducts(products) {
   });
 
   productsEl.innerHTML = html;
+  document.getElementById('result-count').innerHTML = `Showing ${products.length} results`;
 }
 
 function getProductCard(product) {
