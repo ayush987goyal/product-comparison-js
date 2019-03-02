@@ -1,6 +1,7 @@
 let allProducts;
 let allFilters;
 let brandFilters, priceFilters, colorFilters;
+let currentFilteredProds;
 
 let selectedColors = new Set();
 
@@ -11,6 +12,9 @@ const priceMinFilterEl = document.getElementById('price-min-filter');
 const priceMaxFilterEl = document.getElementById('price-max-filter');
 const brandFilterEl = document.getElementById('brand-filter');
 const colorFilterEl = document.getElementById('color-filter');
+const sorterEl = document.getElementById('sorter');
+
+sorterEl.addEventListener('click', handleSort);
 
 async function fetchAllData() {
   allProducts = await fetch('http://demo1853299.mockable.io/products', { method: 'GET' })
@@ -20,6 +24,7 @@ async function fetchAllData() {
     .then(res => res.json())
     .then(filts => filts.filters);
 
+  currentFilteredProds = allProducts;
   brandFilters = allFilters[0].values;
   colorFilters = allFilters[1].values;
   priceFilters = allFilters[2].values;
@@ -54,6 +59,24 @@ function populateFilters() {
   colorFilterEl.innerHTML = colorHtml;
 }
 
+function handleSort(e) {
+  if (e.target.name !== 'sortFields') return;
+  let sortedProds = [...allProducts];
+
+  switch (e.target.id) {
+    case 'releField':
+      break;
+    case 'priceLow':
+      sortedProds.sort((a, b) => a.price.final_price - b.price.final_price);
+      break;
+    case 'priceHigh':
+      sortedProds.sort((a, b) => b.price.final_price - a.price.final_price);
+      break;
+  }
+
+  populateProducts(sortedProds);
+}
+
 function handleCheckChange(color) {
   if (this.checked) {
     selectedColors.add(color);
@@ -61,13 +84,12 @@ function handleCheckChange(color) {
     selectedColors.delete(color);
   }
 
-  let filteredProds;
   if (selectedColors.size) {
-    filteredProds = allProducts.filter(prod => selectedColors.has(prod.colour.color));
+    currentFilteredProds = allProducts.filter(prod => selectedColors.has(prod.colour.color));
   } else {
-    filteredProds = allProducts;
+    currentFilteredProds = allProducts;
   }
-  populateProducts(filteredProds);
+  populateProducts(currentFilteredProds);
 }
 
 function populateProducts(products) {

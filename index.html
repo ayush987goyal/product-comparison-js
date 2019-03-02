@@ -34,7 +34,44 @@
             <div id="color-filter"></div>
           </div>
         </div>
-        <div class="col-md-9 grid" id="products"></div>
+
+        <div class="col-md-9">
+          <div class="row mb-2" id="sorter">
+            Sort By
+            <div class="form-check form-check-inline ml-4">
+              <input
+                type="radio"
+                class="form-check-input"
+                name="sortFields"
+                id="releField"
+                value="rele"
+                checked
+              />
+              <label class="form-check-label" for="releField">Relevance</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                type="radio"
+                class="form-check-input"
+                name="sortFields"
+                id="priceLow"
+                value="priceLow"
+              />
+              <label class="form-check-label" for="priceLow">Price-Low to High</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                type="radio"
+                class="form-check-input"
+                name="sortFields"
+                id="priceHigh"
+                value="priceHigh"
+              />
+              <label class="form-check-label" for="priceHigh">Price-High to Low</label>
+            </div>
+          </div>
+          <div class="row grid" id="products"></div>
+        </div>
       </div>
     </div>
     <script src="main.js"></script>
