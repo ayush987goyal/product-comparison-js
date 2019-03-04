@@ -14,6 +14,7 @@ const productsEl = document.getElementById('products');
 const priceMinFilterEl = document.getElementById('price-min-filter');
 const priceMaxFilterEl = document.getElementById('price-max-filter');
 const brandFilterEl = document.getElementById('brand-filter');
+const brandDataListEl = document.getElementById('brand-data-list');
 const colorFilterEl = document.getElementById('color-filter');
 const sorterEl = document.getElementById('sorter');
 
@@ -40,6 +41,14 @@ async function fetchAllData() {
 
 function populateFilters() {
   populatePriceFilters(priceFilters.slice(0, priceFilters.length - 1), priceFilters.slice(1));
+
+  // let brandHtml = ``;
+  // brandFilters.forEach(brand => {
+  //   brandHtml += `
+  //     <option value="${brand.value}">${brand.title}</option>
+  //   `;
+  // });
+  // brandDataListEl.innerHTML = brandHtml;
 
   let colorHtml = ``;
   colorFilters.forEach((filt, idx) => {
